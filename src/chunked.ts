@@ -36,11 +36,11 @@ export class Chunked extends EventEmitter {
   }
 
   get finished() {
-    return this.#finished;
+    return this.#finished && this.#data.length == 0;
   }
 
   private set ready(flag: boolean) {
-    if (this.finished) flag = true;
+    if (this.#finished) flag = true;
     if (flag == this.#ready) return;
     this.#ready = flag;
     if (flag) {
