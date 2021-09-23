@@ -26,6 +26,7 @@
         "typescript": "^4.1.3"
     },
     "dependencies": {
+        "date-timeout-interval": "^1.3.0",
         "wrtc": "^0.4.7"
     }
 }

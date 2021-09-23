@@ -1,19 +1,18 @@
 export interface StreamVideoOptions {
-    width?: number;
-    height?: number;
-    framerate?: number;
+    width: number;
+    height: number;
+    framerate: number;
 }
 
 export interface StreamAudioOptions {
-    bitsPerSample?: number;
-    sampleRate?: number;
-    channelCount?: number;
+    bitsPerSample: number;
+    sampleRate: number;
+    channelCount: number;
 }
 
 export interface StreamOptions {
-    audio?: StreamAudioOptions;
-    video?: StreamVideoOptions | true;
-    almostFinishedTrigger?: number;
+    buffer: number;
+    maxbuffer: number;
 }
 
 export interface Fingerprint {
