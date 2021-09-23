@@ -5,7 +5,7 @@ import { Chunked } from "./chunked";
 import { StreamAudioOptions, StreamOptions, StreamVideoOptions } from "./types";
 import { Interval, TimerState } from "date-timeout-interval";
 
-declare interface BaseStream {
+export declare interface MediaStream<O> {
   on(event: "pause", listener: (paused: boolean) => void): this;
   on(event: "ready", listener: () => void): this;
   on(event: "finish", listener: () => void): this;
@@ -20,7 +20,7 @@ interface BaseStreamConfig extends StreamOptions {
   cps: number;
 }
 
-abstract class BaseStream extends EventEmitter {
+export abstract class MediaStream<O> extends EventEmitter {
   #cache?: Chunked;
   #timer?: Interval;
   readonly #callback: () => void;
@@ -39,6 +39,11 @@ abstract class BaseStream extends EventEmitter {
       }
     };
   }
+
+  abstract update(
+    readable: Readable,
+    options: StreamOptions & O,
+  ): Promise<void>;
 
   protected _update(
     {
@@ -71,7 +76,7 @@ abstract class BaseStream extends EventEmitter {
       this.emit("error", e);
     });
     this.#timer = new Interval(this.#callback, 1000 / cps);
-    
+
     return new Promise((resolve, reject) => {
       resolver = (e) => {
         if (e) reject(e);
@@ -120,7 +125,7 @@ abstract class BaseStream extends EventEmitter {
   abstract createTrack(): MediaStreamTrack;
 }
 
-export class AudioStream extends BaseStream {
+export class AudioStream extends MediaStream<StreamAudioOptions> {
   readonly #source = new nonstandard.RTCAudioSource();
   #template?: Omit<RTCAudioData, "samples">;
 
@@ -134,7 +139,8 @@ export class AudioStream extends BaseStream {
       },
     );
   }
-  update(
+
+  override update(
     readable: Readable,
     { buffer, maxbuffer, bitsPerSample, sampleRate, channelCount }:
       & StreamOptions
@@ -160,7 +166,7 @@ export class AudioStream extends BaseStream {
   }
 }
 
-export class VideoStream extends BaseStream {
+export class VideoStream extends MediaStream<StreamVideoOptions> {
   readonly #source = new nonstandard.RTCVideoSource();
   #template?: Omit<RTCVideoFrame, "data">;
 
@@ -173,7 +179,8 @@ export class VideoStream extends BaseStream {
       },
     );
   }
-  update(
+
+  override update(
     readable: Readable,
     { buffer, maxbuffer, framerate, width, height }:
       & StreamOptions
