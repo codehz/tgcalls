@@ -49,6 +49,7 @@ export abstract class BaseStream<O> extends EventEmitter {
     {
       readable,
       buffer,
+      readybuffer,
       maxbuffer,
       chunksize,
       cps,
@@ -63,6 +64,7 @@ export abstract class BaseStream<O> extends EventEmitter {
       readable,
       chunksize,
       buffer * cps,
+      readybuffer * cps,
       maxbuffer * cps,
     );
     this.#cache.on("ready", () => {
@@ -142,7 +144,7 @@ export class AudioStream extends BaseStream<StreamAudioOptions> {
 
   override update(
     readable: Readable,
-    { buffer, maxbuffer, bitsPerSample, sampleRate, channelCount }:
+    { bitsPerSample, sampleRate, channelCount, ...common }:
       & StreamOptions
       & StreamAudioOptions,
   ) {
@@ -154,9 +156,8 @@ export class AudioStream extends BaseStream<StreamAudioOptions> {
       channelCount,
     };
     return super._update({
+      ...common,
       readable,
-      buffer,
-      maxbuffer,
       chunksize,
       cps,
     });
@@ -182,7 +183,7 @@ export class VideoStream extends BaseStream<StreamVideoOptions> {
 
   override update(
     readable: Readable,
-    { buffer, maxbuffer, framerate, width, height }:
+    { framerate, width, height, ...common }:
       & StreamOptions
       & StreamVideoOptions,
   ) {
@@ -193,9 +194,8 @@ export class VideoStream extends BaseStream<StreamVideoOptions> {
     const chunksize = width * height + uv_size * 2; // YUV420
     this.#template = { width, height };
     return super._update({
+      ...common,
       readable,
-      buffer,
-      maxbuffer,
       chunksize,
       cps,
     });

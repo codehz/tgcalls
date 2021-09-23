@@ -12,6 +12,7 @@ export interface StreamAudioOptions {
 
 export interface StreamOptions {
     buffer: number;
+    readybuffer: number;
     maxbuffer: number;
 }
 

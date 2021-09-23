@@ -25,6 +25,7 @@ export class Chunked extends EventEmitter {
   readonly readable: Readable;
   readonly itemsize: number;
   readonly minbuffer: number;
+  readonly midbuffer: number;
   readonly maxbuffer: number;
   #finished: boolean = false;
   #ready: boolean = false;
@@ -58,12 +59,14 @@ export class Chunked extends EventEmitter {
     readable: Readable,
     itemsize: number,
     minbuffer: number,
+    midbuffer: number,
     maxbuffer: number,
   ) {
     super();
     this.readable = readable;
     this.itemsize = itemsize;
     this.minbuffer = minbuffer;
+    this.midbuffer = midbuffer;
     this.maxbuffer = maxbuffer;
 
     readable.on("data", (data: Uint8Array) => {
@@ -82,8 +85,8 @@ export class Chunked extends EventEmitter {
       }
       if (this.remain > maxbuffer) {
         readable.pause();
-      } else {
-        this.ready = this.remain >= this.minbuffer;
+      } else if (!this.ready && this.remain >= this.midbuffer) {
+        this.ready = true;
       }
     });
 
