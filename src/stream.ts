@@ -89,7 +89,7 @@ abstract class BaseStream extends EventEmitter {
     return this.#timer?.state == TimerState.Running;
   }
 
-  finish() {
+  stop() {
     if (this.#timer && this.#cache) {
       this.#timer.stop();
       this.#timer = undefined;
