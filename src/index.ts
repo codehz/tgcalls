@@ -3,9 +3,8 @@ import { RTCPeerConnection } from "wrtc";
 import { SdpBuilder } from "./sdp-builder";
 import { parseSdp } from "./utils";
 import { JoinVoiceCallCallback } from "./types";
-import { AudioStream, VideoStream } from "./stream";
 
-export { AudioStream, VideoStream };
+export * from "./stream";
 
 export class TGCalls<T> extends EventEmitter {
   #connection?: RTCPeerConnection;
