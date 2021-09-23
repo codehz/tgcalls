@@ -70,8 +70,8 @@ export class Chunked extends EventEmitter {
       if (this.#remain > 0) {
         const tmp = data.slice(0, this.#remain);
         this.#last.set(tmp, itemsize - this.#remain);
-        this.#remain -= tmp.length;
         data = data.slice(this.#remain);
+        this.#remain -= tmp.length;
         if (this.#remain > 0) return;
       }
       for (const chunk of chunked(data, itemsize)) {
