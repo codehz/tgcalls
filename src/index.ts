@@ -10,11 +10,12 @@ export class TGCalls<T> extends EventEmitter {
   #connection?: RTCPeerConnection;
   #params: T;
 
-  joinVoiceCall?: JoinVoiceCallCallback<T>;
+  #joinVoiceCall: JoinVoiceCallCallback<T>;
 
-  constructor(params: T) {
+  constructor(params: T, joinVoiceCall: JoinVoiceCallCallback<T>) {
     super();
     this.#params = params;
+    this.#joinVoiceCall = joinVoiceCall;
   }
 
   async start(
@@ -23,10 +24,6 @@ export class TGCalls<T> extends EventEmitter {
   ): Promise<void> {
     if (this.#connection) {
       throw new Error("Connection already started");
-    } else if (!this.joinVoiceCall) {
-      throw new Error(
-        "Please set the `joinVoiceCall` callback before calling `start()`",
-      );
     }
 
     this.#connection = new RTCPeerConnection();
@@ -76,7 +73,7 @@ export class TGCalls<T> extends EventEmitter {
     let joinVoiceCallResult;
 
     try {
-      joinVoiceCallResult = await this.joinVoiceCall({
+      joinVoiceCallResult = await this.#joinVoiceCall({
         ufrag,
         pwd,
         hash,
