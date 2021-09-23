@@ -3,14 +3,14 @@ import { EventEmitter, Readable } from "stream";
 function* chunked(
   source: Uint8Array,
   itemsize: number,
-): Generator<[Uint8Array, boolean]> {
+): Generator<Uint8Array> {
   let pos = 0;
   while (source.length - pos >= itemsize) {
-    yield [source.slice(pos, pos + itemsize), true];
+    yield source.slice(pos, pos + itemsize);
     pos += itemsize;
   }
   if (source.length > pos) {
-    yield [source.slice(pos), false];
+    yield source.slice(pos);
   }
 }
 export declare interface Chunked {
@@ -38,7 +38,7 @@ export class Chunked extends EventEmitter {
   get finished() {
     return this.#finished;
   }
-  
+
   private set ready(flag: boolean) {
     if (this.finished) flag = true;
     if (flag == this.#ready) return;
@@ -74,15 +74,11 @@ export class Chunked extends EventEmitter {
         data = data.slice(this.#remain);
         if (this.#remain > 0) return;
       }
-      for (const [chunk, full] of chunked(data, itemsize)) {
-        if (full) {
-          this.#data.push(chunk);
-        } else {
-          const tmp = new Uint8Array(itemsize);
-          tmp.set(chunk);
-          this.#remain = itemsize - chunk.length;
-          this.#data.push(tmp);
-        }
+      for (const chunk of chunked(data, itemsize)) {
+        const tmp = new Uint8Array(itemsize);
+        tmp.set(chunk);
+        this.#data.push(tmp);
+        this.#remain = itemsize - chunk.length;
       }
       if (this.remain > maxbuffer) {
         readable.pause();
