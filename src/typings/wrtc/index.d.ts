@@ -85,11 +85,6 @@ declare module 'wrtc' {
         new (): RTCRtpTransceiver;
     };
 
-    export const RTCSctpTransport: {
-        prototype: RTCSctpTransport;
-        new (): RTCSctpTransport;
-    };
-
     export const RTCSessionDescription: {
         prototype: RTCSessionDescription;
         new (
