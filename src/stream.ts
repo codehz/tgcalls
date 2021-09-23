@@ -5,7 +5,7 @@ import { Chunked } from "./chunked";
 import { StreamAudioOptions, StreamOptions, StreamVideoOptions } from "./types";
 import { Interval, TimerState } from "date-timeout-interval";
 
-export declare interface MediaStream<O> {
+export declare interface BaseStream<O> {
   on(event: "pause", listener: (paused: boolean) => void): this;
   on(event: "ready", listener: () => void): this;
   on(event: "finish", listener: () => void): this;
@@ -20,7 +20,7 @@ interface BaseStreamConfig extends StreamOptions {
   cps: number;
 }
 
-export abstract class MediaStream<O> extends EventEmitter {
+export abstract class BaseStream<O> extends EventEmitter {
   #cache?: Chunked;
   #timer?: Interval;
   readonly #callback: () => void;
@@ -125,7 +125,7 @@ export abstract class MediaStream<O> extends EventEmitter {
   abstract createTrack(): MediaStreamTrack;
 }
 
-export class AudioStream extends MediaStream<StreamAudioOptions> {
+export class AudioStream extends BaseStream<StreamAudioOptions> {
   readonly #source = new nonstandard.RTCAudioSource();
   #template?: Omit<RTCAudioData, "samples">;
 
@@ -166,7 +166,7 @@ export class AudioStream extends MediaStream<StreamAudioOptions> {
   }
 }
 
-export class VideoStream extends MediaStream<StreamVideoOptions> {
+export class VideoStream extends BaseStream<StreamVideoOptions> {
   readonly #source = new nonstandard.RTCVideoSource();
   #template?: Omit<RTCVideoFrame, "data">;
 
